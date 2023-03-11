@@ -1,0 +1,37 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model user {
+  id       Int     @id @default(autoincrement()) @db.UnsignedInt
+  name     String  @unique
+  password String
+  role     String?
+}
+
+model category {
+  id       Int       @id @default(autoincrement()) @db.UnsignedInt
+  title    String
+  articles article[]
+}
+
+// 有关联 关联操作是必选的
+model article {
+  id         Int      @id @default(autoincrement()) @db.UnsignedInt
+  title      String
+  content    String   @db.Text
+  category   category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId Int      @db.UnsignedInt
+  // @default(now())会自动填入当前时间
+  createdAt  DateTime @default(now())
+  // @updatedAt 会自动更新时间
+  updatedAt  DateTime @updatedAt
+}
